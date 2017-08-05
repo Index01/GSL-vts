@@ -27,7 +27,7 @@ print app.config.get('Flask').get('SECRET_KEY')
 app.config['Testing'] = True
 app.config['DEBUG'] = True
 app.config['WTF_CSRF_ENABLED'] = True
-app.config['SECRET_KEY'] = "blackShirts!"
+app.config['SECRET_KEY'] = "super-generic-string"
 #app.config['SERVER_NAME'] = parser.get('Flask', 'SERVER_NAME')
 #print parser.get('Flask', 'SERVER_NAME')
 app.config['SQLALCHEMY_DATABASE_URI'] = parser.get('PostgresConfigs', 'URL')
