@@ -10,7 +10,11 @@ class Cereal(serial.Serial):
         super(Cereal, self).__init__(port=self.device, baudrate=self.baud, timeout=self.time, writeTimeout=self.time)
  
     def cRead():
-        pass
+        '''
+        Read current data from RFID sensor and return list of tags.
+        '''
+        tagList = self.readlines()
+        return(tagList)
 
     def cConfig():
         pass

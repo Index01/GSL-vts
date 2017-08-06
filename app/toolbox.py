@@ -85,7 +85,7 @@ def dataPull(connObjList):
             for i in x.split('\n'):
                 dictList.append(createDict(i.split(',')[0], i.split(',')[1]))
         y.close()
-    except IOError e:
+    except IOError:
         pass
     return(dictList)
 
@@ -105,4 +105,3 @@ def verifyResponse(response, dictList):
         tmpFile = open('./fail.txt', 'w')
         for dictItem in dictList:
             tmpFile.write(dictItem['tagID']+","+dictItem['utc']+"\n")
-

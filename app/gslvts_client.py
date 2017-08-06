@@ -1,12 +1,14 @@
+import siteTransact
 from toolbox import makeConn, getPorts, createDict, autoDiscover
 
 def runOnce():
-    activeConnections = []
-    connObjList = []
-    sessionObj = siteTransact.Connection('home', 'localhost:5050')
+    sessionObj = siteTransact.Connection('home', 'http://localhost:5000/Z2F0ZUF1dG9tYXRlZENoZWNraW4=')
+    return(sessionObj)
     
 def main():
     runOnce()
+    activeConnections = []
+    connObjList = []
     while True:
         autoDiscover(activeConnections, connObjList)
 
