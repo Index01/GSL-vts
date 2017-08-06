@@ -1,17 +1,19 @@
+import json
 import cereal
 from serial import SerialException
 from serial.tools import list_ports
 from datetime import datetime
 
-def createDict(aList, *args):
+def createDict(RFID_number, tStamp = 0):
     '''
-     Accepts a list and adds each item as a key to a dictionary with
-     a current UTC timestamp as its value
+     Accepts a string and creates a dictionary:
+     {'tagID': <string>, 'utc': <timestamp>}
     '''
     newDict = {}
-    for i in aList:
+    if tStamp == 0:
         tStamp = '{:%Y-%m-%d %H:%M:%S}'.format(datetime.utcnow())
-        newDict[i] = tStamp
+    newDict['tagID'] = RFID_number
+    newDict['utc'] = tStamp
     return(newDict)
 
 def getPorts():
@@ -63,5 +65,44 @@ def autoDiscover(activeConnections, connObjList):
         else:
             pass
     except SerialException, e:
-        print("something")
+        print("Error")
+
+def dataPull(connObjList):
+    tempList = []
+    for connObj in connObjList:
+        try:
+            for item in connObj.cRead():
+                tempList.append(item)
+        except:
+            pass
+    for tItem in set(tempList):
+        dictList.append(createDict(tItem))
+    try:
+        y = open('./fail.txt', 'r')
+        x = y.read()
+        if x != '':
+            x = x[:-1]
+            for i in x.split('\n'):
+                dictList.append(createDict(i.split(',')[0], i.split(',')[1]))
+        y.close()
+    except IOError e:
+        pass
+    return(dictList)
+
+def dataPost(dictList):
+    if len(dictList) > 0:
+        jsonData = json.loads(json.dumps(dictList))
+        response = sessionObj.send_post(jsonData)
+        verifyResponse(response, dictList)
+    else:
+        pass
+
+def verifyResponse(response, dictList):
+    if response.status_code == 200:
+        tmpFile = open('./fail.txt', 'w')
+        tmpFile.close()
+    else:
+        tmpFile = open('./fail.txt', 'w')
+        for dictItem in dictList:
+            tmpFile.write(dictItem['tagID']+","+dictItem['utc']+"\n")
 
