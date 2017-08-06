@@ -26,15 +26,13 @@ def success():
 
 @app.route('/Z2F0ZUF1dG9tYXRlZENoZWNraW4=', methods=('GET','POST'))
 def gate_rfid_server():
-    form = HiddenForm() 
     
     request.accept_mimetypes['application/json']
     if request.is_json: 
-        print 'Form Data: %s' % request.form
         print 'Request Data: %s' % request.data
         print 'JSON Data: %s' % request.json
         try:        
-            buffer_values(request.get_json())
+            buffer_values(request.get_json)
             return Response(status=200) 
         except AttributeError:
             return Response(status=451)
@@ -42,7 +40,6 @@ def gate_rfid_server():
     else:
         return Response(status=415)
 
-    #return Response 
 
 @app.route('/forms', methods=('GET', 'POST'))
 def submit_tag_form():
