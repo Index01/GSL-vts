@@ -1,7 +1,9 @@
 
 
 from functools import wraps
-
+import json
+from jsonschema import validate, FormatChecker, ValidationError
+from datetime import datetime 
 
 def json_attribs_check(func):
     """
@@ -9,12 +11,25 @@ def json_attribs_check(func):
     """
     @wraps(func)
     def inner_func(jsonStr):
-        print "jsonstr: %s" % jsonStr()
-
+        gslvtsSchema = {"type":"object",
+                        "properties":{
+                            "id": {"type":"number"}, 
+                            "utc": {"type":"string",
+                                    "format":"date-time"}
+                            }
+                       }
         try:
-            print jsonStr.keys()
-            print jsonStr.values()
-            
+            jsonGslvts=json.loads(jsonStr)
+            print jsonGslvts
+            print type(jsonGslvts)
+            for elem in jsonGslvts:
+                print elem
+                try: 
+                    validate(elem, gslvtsSchema, format_checker=FormatChecker())
+                except ValidationError, e:
+                    print "[-] Invalid json post data. Check it, brah."
+                    print e
+                    raise AttributeError 
         except (AttributeError, ValueError):
             print "[-] IDk what that was, but it wasn't JSON."
             raise AttributeError

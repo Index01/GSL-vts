@@ -1,6 +1,6 @@
 
 
-from requests import Session, headers
+from requests import Session, request
 from ConfigParser import SafeConfigParser, NoSectionError 
 
 class Connection(Session):
@@ -8,11 +8,11 @@ class Connection(Session):
         Connection object is a Session object, give a name and authentication endpoint.
         If you don't need to authenticate it should work without. An .ini file is required.
     """
-    def __init__(self, name, authEndpoint, headers):
+    def __init__(self, name, authEndpoint):
         self.name = name
         super(Connection, self).__init__()
         self.stream = False
-        self.headers = headers 
+        #self.headers = headers 
         self.parser = SafeConfigParser()
         self.parser.read('../gateConfigs.ini') 
 

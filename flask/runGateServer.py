@@ -32,7 +32,9 @@ def gate_rfid_server():
         print 'Request Data: %s' % request.data
         print 'JSON Data: %s' % request.json
         try:        
-            buffer_values(request.get_json)
+            #buffer_values(request.get_json)
+            buffer_values(request.data)
+
             return Response(status=200) 
         except AttributeError:
             return Response(status=451)
