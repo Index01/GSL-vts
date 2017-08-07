@@ -48,12 +48,12 @@ class Connection(Session):
 
 
     def send_json_post(self, endpoint, dPostPayload):
-        self.header.update({"Content-Type":"application/json"})
+        self.headers.update({"Content-Type":"application/json"})
         return self.post(endpoint, dPostPayload)
     
    
     def send_get(self, endpoint):
-        self.header.update({"Content-Type":"application/x-www-form-urlencoded"})
+        self.headers.update({"Content-Type":"application/x-www-form-urlencoded"})
         return self.get(endpoint)
 
 
