@@ -1,3 +1,4 @@
+import re
 import json
 import cereal
 from serial import SerialException
@@ -6,8 +7,8 @@ from datetime import datetime
 
 def createDict(RFID_number, tStamp = 0):
     '''
-     Accepts a string and creates a dictionary:
-     {'tagID': <string>, 'utc': <timestamp>}
+     Accepts a string and creates a two-entry dictionary:
+     {'tagID': <12-digit integer>, 'utc': <timestamp>}
     '''
     newDict = {}
     if tStamp == 0:
@@ -36,9 +37,7 @@ def makeConn(device, activeConnections=[], connObjList=[]):
         newConn = cereal.Cereal(device, port)
         activeConnections.append(device)
         connObjList.append(newConn)
-        print(activeConnections)
-        print(connObjList)
-#        print(port, "connected as", device)
+        print(port, "connected as", device)
         return(activeConnections,connObjList)
 
     except SerialException, e:
@@ -49,14 +48,12 @@ def autoDiscover(activeConnections, connObjList):
     try:
         # checks if tracking list is larger than list reported by getPorts
         if len(activeConnections) > len(getPorts()):
-            # remove corresponding entries from both lists
+            # remove corresponding entries from both tracking and object lists
             for i in list(set(activeConnections)-set(getPorts())):
                 activeConnections.remove(i)
                 for entry in connObjList:
                     if entry.name == "/dev/"+i:
                         connObjList.remove(entry)
-            print(activeConnections)
-            print(connObjList)
         # checks if getPorts list is larger than tracking list
         elif len(getPorts()) > len(activeConnections):
             # if so, call makeConn function to create new connection and update lists
@@ -75,8 +72,12 @@ def dataPull(connObjList):
                 tempList.append(item)
         except:
             pass
+    dictList = []
     for tItem in set(tempList):
-        dictList.append(createDict(tItem))
+        if re.match('^\d{12}$', tItem) == "True":
+            dictList.append(createDict(tItem))
+        else:
+            print('{:%Y-%m-%d %H:%M:%S}'.format(datetime.now()) + " - " + str(tItem) + " is not a valid RFID Tag Number!")
     try:
         y = open('./fail.txt', 'r')
         x = y.read()
@@ -86,13 +87,14 @@ def dataPull(connObjList):
                 dictList.append(createDict(i.split(',')[0], i.split(',')[1]))
         y.close()
     except IOError:
-        pass
+        print('{:%Y-%m-%d %H:%M:%S}'.format(datetime.now()) + " - IOError.  Is fail.txt missing?")
     return(dictList)
 
-def dataPost(dictList):
+def dataPost(sessionObj, dictList):
     if len(dictList) > 0:
-        jsonData = json.loads(json.dumps(dictList))
-        response = sessionObj.send_post(jsonData)
+        jsonData = json.dumps(dictList)
+        print(jsonData)
+        response = sessionObj.send_json_post('http://127.0.0.1:5000/Z2F0ZUF1dG9tYXRlZENoZWNraW4=', jsonData)
         verifyResponse(response, dictList)
     else:
         pass
@@ -102,6 +104,7 @@ def verifyResponse(response, dictList):
         tmpFile = open('./fail.txt', 'w')
         tmpFile.close()
     else:
+        print('{:%Y-%m-%d %H:%M:%S}'.format(datetime.now()) + " - Could not post data.  Recording to temp file.")
         tmpFile = open('./fail.txt', 'w')
         for dictItem in dictList:
-            tmpFile.write(dictItem['tagID']+","+dictItem['utc']+"\n")
+            tmpFile.write(dictItem['tagID']+","+dictItem['UTC']+"\n")
