@@ -12,7 +12,6 @@ class Connection(Session):
         self.name = name
         super(Connection, self).__init__()
         self.stream = False
-        #self.headers = headers 
         self.parser = SafeConfigParser()
         self.parser.read('../gateConfigs.ini') 
 
@@ -22,6 +21,9 @@ class Connection(Session):
         
         
     def __auth_setup__(self):
+        """
+            Runs one time at object instantiation, needs to be mutatable.
+        """
         try: 
             credentials = {'email':self.parser.get('SiteCredentials', 'email'), 
                            'password':self.parser.get('SiteCredentials', 'password')}
@@ -44,16 +46,18 @@ class Connection(Session):
 
 
     def send_form_post(self, endpoint, dPostPayload):
+        """ For sending to forms, like babalooey.com"""
+        self.headers.update({"Content-Type":"application/x-www-form-urlencoded"})
         return self.post(endpoint, dPostPayload)
 
 
     def send_json_post(self, endpoint, dPostPayload):
+        """ For sending to json endpoints, like GSlvts server."""
         self.headers.update({"Content-Type":"application/json"})
         return self.post(endpoint, dPostPayload)
     
    
     def send_get(self, endpoint):
-        self.headers.update({"Content-Type":"application/x-www-form-urlencoded"})
         return self.get(endpoint)
 
 

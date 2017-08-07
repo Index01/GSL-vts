@@ -20,10 +20,7 @@ def json_attribs_check(func):
                        }
         try:
             jsonGslvts=json.loads(jsonStr)
-            print jsonGslvts
-            print type(jsonGslvts)
             for elem in jsonGslvts:
-                print elem
                 try: 
                     validate(elem, gslvtsSchema, format_checker=FormatChecker())
                 except ValidationError, e:
