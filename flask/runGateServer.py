@@ -3,14 +3,12 @@
 
 
 from flask import Flask, request, render_template, json, Response
-from flask_sqlalchemy import SQLAlchemy
-
-from config import app
+from config import app, db
 from forms import TagForm, HiddenForm
 from models import GatePersonnel, RfidTag
 from controllers import buffer_values 
 
-db = SQLAlchemy(app)
+#db = SQLAlchemy(app)
 
 
 
@@ -68,4 +66,6 @@ def submit_tag_form():
 if __name__=='__main__':
     #starfighter()
     #app.run(debug=True, host='0.0.0.0')
+    print "[+] Creating DBs" 
+    db.create_all() 
     app.run(debug=True)

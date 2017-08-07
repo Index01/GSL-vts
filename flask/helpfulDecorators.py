@@ -22,8 +22,9 @@ def json_attribs_check(func):
                             "tagID": {"type":"number"}, 
                             "UTC": {"type":"string",
                                     "format":"date-time"}
-                            }
-                       }
+			},
+			"required":["tagID","UTC"]
+                         }
         try:
             jsonGslvts=json.loads(jsonStr)
             for elem in jsonGslvts:
@@ -37,10 +38,8 @@ def json_attribs_check(func):
             print "[-] IDk what that was, but it wasn't JSON."
             raise AttributeError
 
-        return
- 
+        return(func(jsonStr)) 
     return inner_func
-
 
 
 

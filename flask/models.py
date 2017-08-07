@@ -11,8 +11,10 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from sqlalchemy_utcdatetime import UTCDateTime
 from sqlalchemy.dialects.postgresql import UUID
+import uuid
+from config import db
 
-Base = declarative_base()
+#Base = declarative_base()
 
 class GateDBConnection():
     """Right now this class does nothing, maybe it will do something.""" 
@@ -22,7 +24,7 @@ class GateDBConnection():
     def connect_db():
         pass
 
-class GatePersonnel(Base):
+class GatePersonnel(db.Model):
     """
         Gate team member record
 
@@ -34,24 +36,28 @@ class GatePersonnel(Base):
 
     __tablename__= 'gatepersonnel'
     #id = Column()    # IDs? where we're going, we don't need IDs.
-    uuid = Column(UUID(as_uuid=True), primary_key=True) 
-    playaName = Column(String(64))
-    additionalIdentifier = Column(String(64))
-    firstPublishedEntryDate = Column(UTCDateTime, default=None)
-    lastPublishedEntryDate = Column(UTCDateTime, default=None)
+    uuid = db.Column(UUID(as_uuid=True), primary_key=True) 
+    playaName = db.Column(db.String(64))
+#    additionalIdentifier = db.Column(db.String(64))
+#    firstPublishedEntryDate = db.Column(UTCDateTime, default=None)
+#    lastPublishedEntryDate = db.Column(UTCDateTime, default=None)
   
     # Define ref for ralationship, on the one side of one to many. 
-    currentRfidTagIDs = Column(UUID, ForeignKey('rfidtag.uuid')) 
+    currentRfidTagIDs = db.Column(UUID, ForeignKey('rfidtag.uuid')) 
  
-    def __init__(self, name):
-        self.name = name 
-
+    #def __init__(self, playaName, additionalIdentifier, lastPublishedEntryDate):
+    def __init__(self, playaName):
+        self.playaName = playaName 
+#        self.additionalIdentifier = additionalIdentifier 
+#        self.firstPublishedEntryDate = firstPublishedEntryDate
+#        self.lastPublishedEntryDate = lastPublishedEntryDate 
+        self.uuid = uuid.uuid4()
 
     def __repr__(self):
         return "<GatePersonnel(PlayaName= '%s')>" % self.name
 
 
-class RfidTag(Base):
+class RfidTag(db.Model):
     """
         Gate RFID UTF tag IDs
  
@@ -60,18 +66,23 @@ class RfidTag(Base):
    
     __tablename__ = 'rfidtag'  
     #id = Column()
-    uuid = Column(UUID(as_uuid=True), primary_key=True)  
-    rfidTagId = Column(Integer)
-    firstPublishedEntryDate = Column(UTCDateTime, default=None)
-    lastPublishedEntryDate = Column(UTCDateTime, default=None)
+    uuid = db.Column(UUID(as_uuid=True), primary_key=True)  
+    rfidTagId = db.Column(db.Integer)
+#    firstPublishedEntryDate = db.Column(UTCDateTime, default=None)
+#    lastPublishedEntryDate = db.Column(UTCDateTime, default=None)
 
     # Foreign key relationship, one to many, relationship on many side.
     tagHolder = relationship("GatePersonnel", backref="RFIDTag", lazy='select')
  
-    def __init__(self, name):
-        self.name = name
+    #def __init__(self, tagID, firstDate, lastDate):
+    def __init__(self, tagID):
+        self.rfidTagId = tagID
+#        self.firstPublishedEntryDate = firstDate
+#        self.lastPublishedEntryDate = lastDate
+        self.uuid = uuid.uuid4() 
+        print "init rfid"
 
-    
+ 
     def __repr__(self):
         return "<RFIDTag(RFIDTagID= '%s')>" % self.name
 
