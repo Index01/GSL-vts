@@ -12,11 +12,19 @@ def buffer_values(jsonStr):
     print jdGslvts 
     for elem in jdGslvts:
         print elem
-#        dt = elem['UTC']
+        dt = elem['UTC']
         idTag = elem['tagID']
 #        playaName = 'Index'
 
-        check_for_existing_id(idTag)
+        if check_for_existing_id(elem):
+            print "adding tag"
+             
+            rfidTag = RfidTag(tagID=idTag, firstDate=dt) 
+            db.session.add(rfidTag)
+            db.session.commit()
+       
+        else:
+            print "not adding tag"
 
 
 #        person = GatePersonnel(playaName=playaName , additionalIdentifier="ping pong" , 
@@ -24,14 +32,20 @@ def buffer_values(jsonStr):
 #        rfidTag = RfidTag(tagID= idTag, firstDate= dt, lastDate= dt) 
 
 #        person = GatePersonnel(playaName=playaName) 
-        rfidTag = RfidTag(tagID=idTag) 
         
 #        db.session.add(person)
-        db.session.add(rfidTag)
-        db.session.commit()
 
-def check_for_existing_id(tagID):
-    #status = db.session.query(exists().where(RfidTag.tagID==tagID)).scalar()
-    #print status
-    print "checking db..." 
-    return 
+def check_for_existing_id(dGslvt):
+    if db.session.query(exists().where(RfidTag.rfidTagId==dGslvt['tagID'])).scalar():
+        return None   
+    else:
+         
+        if db.session.query(exists().where(RfidTag.firstPublishedEntryDate==None)).scalar():
+            setup_new_tag(dGslvt)
+        else:
+            return dGslvt
+    return
+
+def setup_new_tag(**newGslvt):
+    pass
+ 

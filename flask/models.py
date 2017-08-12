@@ -68,16 +68,16 @@ class RfidTag(db.Model):
     #id = Column()
     uuid = db.Column(UUID(as_uuid=True), primary_key=True)  
     rfidTagId = db.Column(db.Integer)
-#    firstPublishedEntryDate = db.Column(UTCDateTime, default=None)
+    firstPublishedEntryDate = db.Column(UTCDateTime, default=None)
 #    lastPublishedEntryDate = db.Column(UTCDateTime, default=None)
 
     # Foreign key relationship, one to many, relationship on many side.
     tagHolder = relationship("GatePersonnel", backref="RFIDTag", lazy='select')
  
     #def __init__(self, tagID, firstDate, lastDate):
-    def __init__(self, tagID):
+    def __init__(self, tagID, firstDate):
         self.rfidTagId = tagID
-#        self.firstPublishedEntryDate = firstDate
+        self.firstPublishedEntryDate = firstDate
 #        self.lastPublishedEntryDate = lastDate
         self.uuid = uuid.uuid4() 
         print "init rfid"

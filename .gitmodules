@@ -1,0 +1,3 @@
+[submodule "submods/python-mercuryapi"]
+	path = submods/python-mercuryapi
+	url = https://github.com/gotthardp/python-mercuryapi
